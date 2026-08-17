@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Método de Trachtenberg - UFC</title>
+  
+  <!-- Fontes Tipográficas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #1e3557;
+      --bg-gradient: radial-gradient(circle at 50% 30%, #26436e 0%, #1e3557 58%, #162842 100%);
+      
+      --ufc-gold: #e5aa24;
+      --ufc-gold-dark: #c48d12;
+      --ufc-gold-hover: #f1b735;
+      
+      --text-white: #ffffff;
+      --text-soft: #f4f8fc;
+      --text-muted: #9cb9d8;
+
+      /* PALETA DO ÁBACO COM 9 HASTES */
+      --abacus-frame: #102136;
+      --abacus-beam: #0a1524;
+      --abacus-rod: #9bb2ce;
+      --abacus-bead: #e5aa24;
+      --abacus-bead-shadow: rgba(0, 0, 0, 0.45);
+      --abacus-dot: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Georgia", "Times New Roman", Times, serif;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      background-color: var(--bg-base);
+      background-attachment: fixed;
+      color: var(--text-white);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* CABEÇALHO */
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 4px;
+      position: relative;
+      padding-top: 6px;
+    }
+
+    h1.main-title {
+      color: var(--text-white);
+      font-size: 2.1rem;
+      font-weight: normal;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+      line-height: 1.15;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .subtitle-ufc {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-style: italic;
+      color: #bfd4eb;
+      font-size: 0.85rem;
+      margin-top: 6px;
+    }
+
+    .help-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: var(--text-white);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .help-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* MODAL DE HISTÓRIA ELEGANTE (SUBSTITUI O ALERT NATIVO DO NAVEGADOR) */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-base);
+      border: 2px solid var(--ufc-gold);
+      border-radius: 16px;
+      max-width: 400px;
+      width: 100%;
+      padding: 22px 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      color: var(--ufc-gold);
+      font-weight: bold;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 8px;
+    }
+
+    .modal-body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--text-soft);
+    }
+
+    /* SELETOR DE MODO DE ENTRADA */
+    .input-mode-selector {
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .input-mode-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .input-mode-btn.active {
+      background: var(--ufc-gold);
+      color: #122238;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* GRID DE CARDS */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .card {
+      background-color: var(--ufc-gold);
+      border: 1px solid var(--ufc-gold-dark);
+      border-radius: 14px;
+      padding: 16px 14px;
+      cursor: pointer;
+      color: var(--text-white);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background-color: var(--ufc-gold-hover);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+    }
+
+    .card .title {
+      font-family: 'Playfair Display', "Georgia", serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+
+    .card .desc {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-soft);
+      line-height: 1.3;
+      letter-spacing: 0.2px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-full {
+      grid-column: span 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+    }
+
+    .card-full .title {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .card-full-icon {
+      font-family: 'Playfair Display', "Georgia", serif;
+      color: var(--text-white);
+      font-size: 1.9rem;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* TELAS / VIEWS */
+    .view {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    .view-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      gap: 8px;
+    }
+
+    .view-top-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ufc-gold);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* TUTORIAL */
+    .tutorial-content {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-left: 5px solid var(--ufc-gold);
+      border-radius: 0 12px 12px 0;
+      padding: 18px 16px;
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 56vh;
+      overflow-y: auto;
+    }
+
+    .tutorial-step {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: #e9f2fb;
+    }
+
+    .tutorial-step strong {
+      color: var(--ufc-gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .tutorial-example {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 6px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #ffd67a;
+      line-height: 1.4;
+    }
+
+    /* REGRA DO EXERCÍCIO */
+    .rule-card {
+      background-color: rgba(255, 255, 255, 0.09);
+      border-left: 5px solid var(--ufc-gold);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 14px;
+      backdrop-filter: blur(4px);
+    }
+
+    .rule-title {
+      color: var(--ufc-gold);
+      font-size: 1.15rem;
+      font-weight: bold;
+      margin-bottom: 3px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+
+    .rule-text {
+      color: var(--text-white);
+      font-size: 0.88rem;
+      line-height: 1.4;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .rule-zero-tip {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.2);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.78rem;
+      line-height: 1.35;
+      color: #d1e2f3;
+    }
+
+    .rule-zero-tip strong {
+      color: var(--ufc-gold);
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #ffd67a;
+    }
+
+    /* CAIXA DE EXERCÍCIO */
+    .exercise-box {
+      text-align: center;
+      padding: 20px 14px;
+      background-color: var(--ufc-gold);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .expression {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Playfair Display', "Georgia", serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 14px;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      font-variant-numeric: lining-nums tabular-nums;
+      line-height: 1;
+    }
+
+    .expression .num {
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .expression .op {
+      font-size: 1.9rem;
+      opacity: 0.9;
+      line-height: 1;
+      transform: translateY(-2px);
+    }
+
+    /* ENTRADA POR TECLADO */
+    .input-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    input[type="number"] {
+      background-color: #ffffff;
+      border: 2px solid var(--ufc-gold-dark);
+      color: var(--bg-base);
+      font-size: 1.35rem;
+      font-weight: bold;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 10px 14px;
+      height: 48px;
+      border-radius: 10px;
+      text-align: center;
+      width: 150px;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+
+    input[type="number"]:focus {
+      border-color: #ffffff;
+    }
+
+    /* ESTRUTURA DO ÁBACO / SOROBAN VIRTUAL DE 9 DÍGITOS */
+    .abacus-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 450px;
+      margin: 4px 0 10px 0;
+    }
+
+    .abacus-frame {
+      background: var(--abacus-frame);
+      border: 4px solid #08111d;
+      border-radius: 10px;
+      padding: 6px 3px;
+      display: flex;
+      justify-content: space-around;
+      position: relative;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.3);
+      width: 100%;
+    }
+
+    .abacus-beam-bar {
+      position: absolute;
+      top: 54px;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: var(--abacus-beam);
+      border-top: 1px solid #1f3757;
+      border-bottom: 1px solid #000;
+      z-index: 2;
+    }
+
+    .abacus-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 34px;
+      height: 195px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .abacus-rod-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--abacus-rod);
+      z-index: 1;
+      border-radius: 1px;
+    }
+
+    .abacus-dot {
+      position: absolute;
+      top: 56px;
+      width: 5px;
+      height: 5px;
+      background: var(--abacus-dot);
+      border-radius: 50%;
+      z-index: 3;
+    }
+
+    .abacus-deck-upper {
+      height: 52px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 4;
+    }
+
+    .abacus-deck-lower {
+      margin-top: 12px;
+      height: 128px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      z-index: 4;
+      gap: 1px;
+    }
+
+    .soroban-bead {
+      width: 30px;
+      height: 18px;
+      background: linear-gradient(180deg, #fce282 0%, var(--abacus-bead) 50%, var(--ufc-gold-dark) 100%);
+      border-radius: 50% / 100%;
+      box-shadow: inset 0 2px 2px rgba(255,255,255,0.7), inset 0 -2px 3px rgba(0,0,0,0.5), 0 2px 4px var(--abacus-bead-shadow);
+      border: 1px solid #9c6e0a;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .abacus-deck-upper .soroban-bead {
+      transform: translateY(2px);
+    }
+    .abacus-deck-upper .soroban-bead.active {
+      transform: translateY(28px);
+      border-color: #ffffff;
+      box-shadow: inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.4), 0 0 6px rgba(255, 255, 255, 0.6);
+    }
+
+    .abacus-deck-lower .soroban-bead {
+      transform: translateY(0);
+    }
+    .abacus-deck-lower .soroban-bead.active {
+      transform: translateY(-38px);
+      border-color: #ffffff;
+      box-shadow: inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.4), 0 0 6px rgba(255, 255, 255, 0.6);
+    }
+
+    .abacus-control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+
+    .abacus-value-display {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #122238;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--ufc-gold-dark);
+      letter-spacing: 1px;
+    }
+
+    .abacus-btn-clear {
+      background: #102136;
+      color: var(--text-white);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s;
+    }
+    .abacus-btn-clear:hover {
+      background: #1c3658;
+    }
+
+    /* BOTÕES GERAIS */
+    .btn {
+      background-color: var(--bg-base);
+      color: var(--text-white);
+      border: none;
+      border-radius: 10px;
+      padding: 0 20px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      cursor: pointer;
+      font-size: 0.92rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background-color: #26436e;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: var(--text-white);
+      height: auto;
+      padding: 12px 16px;
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-gold {
+      background-color: var(--ufc-gold);
+      color: var(--text-white);
+      border: 1px solid var(--ufc-gold-dark);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      height: auto;
+      padding: 12px 16px;
+    }
+
+    .btn-gold:hover {
+      background-color: var(--ufc-gold-hover);
+    }
+
+    .feedback {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 1rem;
+      margin-top: 10px;
+      min-height: 24px;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+
+    .feedback.correct { color: #ffffff; }
+    .feedback.incorrect { color: #ffebee; }
+
+    .result-card {
+      background-color: var(--ufc-gold);
+      border-radius: 16px;
+      padding: 24px 16px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .result-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .result-stats {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    /* RODAPÉ UFC (COM LINK PARA O INSTAGRAM) */
+    footer {
+      margin-top: 14px;
+      text-align: center;
+      color: var(--text-muted);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    footer .ufc-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      opacity: 0.95;
+    }
+
+    footer .ufc-link {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      opacity: 0.85;
+      letter-spacing: 0.3px;
+      text-decoration: none;
+      transition: color 0.2s, opacity 0.2s;
+      cursor: pointer;
+    }
+
+    footer .ufc-link:hover {
+      color: var(--ufc-gold);
+      opacity: 1;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MODAL DE HISTÓRIA / SOBRE O MÉTODO -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-card">
+      <div class="modal-title">Sobre o Método</div>
+      <div class="modal-body">
+        O <strong>Método Trachtenberg</strong> é um sistema de cálculo mental rápido desenvolvido pelo engenheiro russo <strong>Jakow Trachtenberg</strong> durante a Segunda Guerra Mundial, enquanto esteve aprisionado em um campo de concentração nazista para manter sua mente lúcida e sobreviver.
+      </div>
+      <button class="btn btn-gold" style="height: 40px; width: 100%;" onclick="closeHistoryModal()">Entendido</button>
+    </div>
+  </div>
+
+  <div class="container">
+    
+    <!-- 1. TELA PRINCIPAL (ESCOLHA DA REGRA) -->
+    <div id="homeView" class="view active">
+      <header>
+        <button class="help-btn" onclick="openHistoryModal()">?</button>
+        <h1 class="main-title">Método de Trachtenberg</h1>
+        <p class="subtitle-ufc">Aprenda a regra, veja o passo a passo e resolva mentalmente</p>
+      </header>
+
+      <div class="grid">
+        <div class="card" onclick="openModeMenu(11, 'Adicione o dígito ao seu vizinho à direita.')">
+          <div class="title">&times; 11</div>
+          <div class="desc">A mais simples: dígito + vizinho</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(12, 'Dobre cada dígito e adicione o vizinho à direita.')">
+          <div class="title">&times; 12</div>
+          <div class="desc">Dobro + vizinho inteiro</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(6, 'Some metade do vizinho ao dígito (+5 se o dígito for ímpar).')">
+          <div class="title">&times; 6</div>
+          <div class="desc">Dígito + metade do vizinho</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(7, 'Dobre o dígito + metade do vizinho (+5 se for ímpar).')">
+          <div class="title">&times; 7</div>
+          <div class="desc">Dobro + metade do vizinho</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(5, 'Pegue a metade do vizinho (+5 se o dígito for ímpar).')">
+          <div class="title">&times; 5</div>
+          <div class="desc">Só metade do vizinho</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(9, 'Subtraia o último de 10 e os outros de 9, somando o vizinho diminuído de 1.')">
+          <div class="title">&times; 9</div>
+          <div class="desc">Complemento total + vizinho</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(8, 'Subtraia de 9/10, dobre o resultado e some o vizinho.')">
+          <div class="title">&times; 8</div>
+          <div class="desc">Complemento &times; 2 + vizinho</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(4, 'Subtraia de 9/10 + metade do vizinho (+5 se for ímpar).')">
+          <div class="title">&times; 4</div>
+          <div class="desc">Complemento + metade vizinho</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(3, 'Subtraia de 9/10, dobre + metade do vizinho (+5 se for ímpar).')">
+          <div class="title">&times; 3</div>
+          <div class="desc">Complemento &times; 2 + metade</div>
+        </div>
+
+        <div class="card" onclick="openModeMenu(2, 'Dobre cada dígito simples da direita para a esquerda.')">
+          <div class="title">&times; 2</div>
+          <div class="desc">Dobro simples</div>
+        </div>
+
+        <div class="card card-full" onclick="openModeMenu('mixed', 'Modo variado com todas as regras misturadas!')">
+          <div>
+            <div class="title">Modo misto</div>
+            <div class="desc">Uma regra aleatória por questão, com repetição livre.</div>
+          </div>
+          <div class="card-full-icon">&times; ?</div>
+        </div>
+      </div>
+      
+      <footer>
+        <span class="ufc-name">Universidade Federal do Ceará</span>
+        <a href="https://www.instagram.com/sorobanufc?igsh=MXQ2d3Z4OXNoZ3JmZw==" target="_blank" rel="noopener noreferrer" class="ufc-link">
+          Projeto de Extensão &bull; Licenciatura em Matemática
+        </a>
+      </footer>
+    </div>
+
+    <!-- 2. SUB-MENU DE MODOS (TUTORIAL / TREINO / CONTRA O RELÓGIO) -->
+    <div id="modeSelectView" class="view">
+      <div class="view-top-bar">
+        <div class="view-top-title" id="modeMenuTitle">Regra do &times; 11</div>
+        <div class="nav-actions">
+          <button class="btn btn-secondary" style="height:34px; padding:0 12px; font-size:0.75rem;" onclick="showHome()">🏠 Início</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+        <div class="card" onclick="openTutorial()">
+          <div class="title" style="font-size:1.4rem;">Tutorial Detalhado</div>
+          <div class="desc">Aprenda passo a passo o algoritmo com exemplos claros e a regra do zero.</div>
+        </div>
+
+        <div class="card" onclick="openDigitSelect('treino')">
+          <div class="title" style="font-size:1.4rem;">Modo Treino Livre</div>
+          <div class="desc">Escolha a quantidade de dígitos e treine sem limite de tempo nem de questões.</div>
+        </div>
+
+        <div class="card" onclick="openDigitSelect('timer')">
+          <div class="title" style="font-size:1.4rem;">Contra o Relógio</div>
+          <div class="desc">Desafio rápido: resolva exatamente 5 contas no menor tempo possível!</div>
+        </div>
+      </div>
+
+      <footer>
+        <span class="ufc-name">Universidade Federal do Ceará</span>
+        <a href="https://www.instagram.com/sorobanufc?igsh=MXQ2d3Z4OXNoZ3JmZw==" target="_blank" rel="noopener noreferrer" class="ufc-link">
+          Projeto de Extensão &bull; Licenciatura em Matemática
+        </a>
+      </footer>
+    </div>
+
+    <!-- 3. TELA DE TUTORIAL -->
+    <div id="tutorialView" class="view">
+      <div class="view-top-bar">
+        <div class="view-top-title" id="tutorialTitle">Tutorial: Regra do &times; 11</div>
+        <div class="nav-actions">
+          <button class="btn btn-secondary" style="height:34px; padding:0 10px; font-size:0.75rem;" onclick="showHome()">🏠 Início</button>
+          <button class="btn btn-secondary" style="height:34px; padding:0 10px; font-size:0.75rem;" onclick="openModeMenu(currentMultiplier, currentRuleText)">Voltar</button>
+        </div>
+      </div>
+
+      <div class="tutorial-content" id="tutorialContent"></div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-gold" style="flex: 1;" onclick="openDigitSelect('treino')">Ir para o Treino</button>
+      </div>
+
+      <footer>
+        <span class="ufc-name">Universidade Federal do Ceará</span>
+        <a href="https://www.instagram.com/sorobanufc?igsh=MXQ2d3Z4OXNoZ3JmZw==" target="_blank" rel="noopener noreferrer" class="ufc-link">
+          Projeto de Extensão &bull; Licenciatura em Matemática
+        </a>
+      </footer>
+    </div>
+
+    <!-- 4. SUB-MENU DE ESCOLHA DE DÍGITOS -->
+    <div id="digitSelectView" class="view">
+      <div class="view-top-bar">
+        <div class="view-top-title" id="digitSelectTitle">Escolha os Dígitos</div>
+        <div class="nav-actions">
+          <button class="btn btn-secondary" style="height:34px; padding:0 10px; font-size:0.75rem;" onclick="showHome()">🏠 Início</button>
+          <button class="btn btn-secondary" style="height:34px; padding:0 10px; font-size:0.75rem;" onclick="openModeMenu(currentMultiplier, currentRuleText)">Voltar</button>
+        </div>
+      </div>
+
+      <p class="subtitle-ufc" style="text-align: center; margin: 4px 0 10px 0;" id="digitSelectSub">
+        Selecione o tamanho do número para praticar:
+      </p>
+
+      <div class="grid">
+        <div class="card" onclick="startPracticeWithDigits(2)">
+          <div class="title">2 Dígitos</div>
+          <div class="desc">Exemplo: 47 &times; N</div>
+        </div>
+
+        <div class="card" onclick="startPracticeWithDigits(3)">
+          <div class="title">3 Dígitos</div>
+          <div class="desc">Exemplo: 545 &times; N</div>
+        </div>
+
+        <div class="card" onclick="startPracticeWithDigits(4)">
+          <div class="title">4 Dígitos</div>
+          <div class="desc">Exemplo: 3.284 &times; N</div>
+        </div>
+
+        <div class="card" onclick="startPracticeWithDigits(5)">
+          <div class="title">5 Dígitos</div>
+          <div class="desc">Exemplo: 74.192 &times; N</div>
+        </div>
+      </div>
+
+      <footer>
+        <span class="ufc-name">Universidade Federal do Ceará</span>
+        <a href="https://www.instagram.com/sorobanufc?igsh=MXQ2d3Z4OXNoZ3JmZw==" target="_blank" rel="noopener noreferrer" class="ufc-link">
+          Projeto de Extensão &bull; Licenciatura em Matemática
+        </a>
+      </footer>
+    </div>
+
+    <!-- 5. TELA DE PRÁTICA (ONDE APARECE O SELETOR DE DIGITAR / ÁBACO) -->
+    <div id="practiceView" class="view">
+      <div class="view-top-bar" style="border-bottom:none; padding-bottom:0;">
+        <div class="view-top-title" style="font-size:1.15rem;" id="practiceHeaderTitle">Prática</div>
+        <div class="nav-actions">
+          <button class="btn btn-secondary" style="height:32px; padding:0 10px; font-size:0.72rem;" onclick="showHome()">🏠 Início</button>
+          <button class="btn btn-secondary" style="height:32px; padding:0 10px; font-size:0.72rem;" onclick="openDigitSelect(currentMode)">Dígitos</button>
+        </div>
+      </div>
+
+      <div class="status-bar" id="statusBar" style="display:none;">
+        <span id="progressIndicator">Questão 1 de 5</span>
+        <span id="timerDisplay">Tempo: 0.0s</span>
+      </div>
+
+      <!-- SELETOR VISÍVEL APENAS AQUI NA TELA DE PRÁTICA -->
+      <div class="input-mode-selector" style="margin-top:0;">
+        <button class="input-mode-btn active" id="btnModeKeyboard" onclick="setInputMode('keyboard')">
+          ⌨️ Digitar Resposta
+        </button>
+        <button class="input-mode-btn" id="btnModeAbacus" onclick="setInputMode('abacus')">
+          🧮 Simbolizar no Ábaco
+        </button>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-title" id="ruleHeader">Regra do &times; 11</div>
+        <div class="rule-text" id="ruleDescription"></div>
+        <div class="rule-zero-tip">
+          <strong>Regra do Zero à Esquerda:</strong> Imagine sempre um <strong>0</strong> na frente do número (ex.: <em>0545</em>) para aplicar a regra ao último dígito e somar eventuais transportes ("vai-um").
+        </div>
+      </div>
+
+      <div class="exercise-box">
+        <div class="expression" id="problemDisplay">
+          <span class="num">545</span>
+          <span class="op">&times;</span>
+          <span class="num">11</span>
+        </div>
+
+        <!-- ENTRADA POR TECLADO -->
+        <div class="input-row" id="keyboardInputSection">
+          <input type="number" id="answerInput" placeholder="Resposta" autocomplete="off" onkeydown="if(event.key==='Enter') checkAnswer()">
+          <button class="btn" onclick="checkAnswer()">OK</button>
+        </div>
+
+        <!-- ENTRADA POR ÁBACO COM 9 HASTES -->
+        <div class="abacus-container" id="abacusSection">
+          <div class="abacus-frame" id="sorobanFrame">
+            <div class="abacus-beam-bar"></div>
+          </div>
+          
+          <div class="abacus-control-row">
+            <button class="abacus-btn-clear" onclick="resetAbacus()">⟲ Zerar</button>
+            <div class="abacus-value-display">Valor: <span id="abacusValueText">0</span></div>
+            <button class="btn" style="height:36px; padding:0 16px; font-size:0.85rem;" onclick="checkAnswer()">Confirmar</button>
+          </div>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="showHome()">Menu Inicial</button>
+        <button class="btn btn-gold" id="nextQuestionBtn" style="flex: 1;" onclick="generateQuestion()">Nova Conta</button>
+      </div>
+
+      <footer>
+        <span class="ufc-name">Universidade Federal do Ceará</span>
+        <a href="https://www.instagram.com/sorobanufc?igsh=MXQ2d3Z4OXNoZ3JmZw==" target="_blank" rel="noopener noreferrer" class="ufc-link">
+          Projeto de Extensão &bull; Licenciatura em Matemática
+        </a>
+      </footer>
+    </div>
+
+    <!-- 6. RESULTADOS CONTRA O RELÓGIO -->
+    <div id="timeTrialResultView" class="view">
+      <div class="view-top-bar">
+        <div class="view-top-title">Fim do Desafio</div>
+        <div class="nav-actions">
+          <button class="btn btn-secondary" style="height:34px; padding:0 12px; font-size:0.75rem;" onclick="showHome()">🏠 Início</button>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-title">Desafio Concluído!</div>
+        <div class="result-stats" id="timeTrialSummary">
+          Tempo Total: 0s<br>Acertos: 5 / 5
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="showHome()">Menu Inicial</button>
+        <button class="btn btn-gold" style="flex: 1;" onclick="startPracticeWithDigits(selectedDigits)">Repetir</button>
+      </div>
+
+      <footer>
+        <span class="ufc-name">Universidade Federal do Ceará</span>
+        <a href="https://www.instagram.com/sorobanufc?igsh=MXQ2d3Z4OXNoZ3JmZw==" target="_blank" rel="noopener noreferrer" class="ufc-link">
+          Projeto de Extensão &bull; Licenciatura em Matemática
+        </a>
+      </footer>
+    </div>
+
+  </div>
+
+  <script>
+    let currentMultiplier = 11;
+    let currentRuleText = "";
+    let isMixed = false;
+    let currentMode = 'treino';
+    let selectedDigits = 3;
+    let inputMode = 'keyboard';
+    
+    let currentNumber = 0;
+    
+    const TOTAL_COLUMNS = 9;
+    let abacusState = Array.from({ length: TOTAL_COLUMNS }, () => ({ upper: 0, lower: 0 }));
+
+    let timerQuestionsCount = 0;
+    let timerCorrectAnswers = 0;
+    let timerStartTime = 0;
+    let timerInterval = null;
+
+    const multipliersList = [11, 12, 6, 7, 5, 9, 8, 4, 3, 2];
+
+    const tutorialsData = {
+      11: {
+        title: "Multiplicação por 11",
+        steps: [
+          "<strong>1. Prepare o número com zero à esquerda:</strong> Escreva um zero fantasma à frente (ex.: para 637, pense em 0637).",
+          "<strong>2. Último dígito (unidades):</strong> Permanece exatamente o mesmo, pois seu 'vizinho da direita' é zero.",
+          "<strong>3. Dígitos do meio:</strong> Some cada dígito ao seu vizinho imediato à direita. Se a soma for 10 ou mais, anote as unidades e leve 1 (vai-um) para a próxima etapa à esquerda.",
+          "<strong>4. Primeiro dígito (sob o zero):</strong> Some o zero ao seu vizinho à direita (o primeiro dígito original) e adicione eventual transporte.",
+          "<div class='tutorial-example'>Exemplo: 637 &times; 11 (pensamos em 0 6 3 7)<br>&bull; 7 + 0 = <strong>7</strong><br>&bull; 3 + 7 = 10 &rarr; <strong>0</strong> (vai 1)<br>&bull; 6 + 3 + 1 = 10 &rarr; <strong>0</strong> (vai 1)<br>&bull; 0 + 6 + 1 = <strong>7</strong><br>Resultado: <strong>7.007</strong></div>"
+        ]
+      },
+      12: {
+        title: "Multiplicação por 12",
+        steps: [
+          "<strong>1. Regra base:</strong> Dobre cada dígito e adicione o seu vizinho da direita.",
+          "<strong>2. Passo a passo:</strong> Comece da direita para a esquerda. Sempre adicione um zero à esquerda do multiplicando.",
+          "<strong>3. Transporte:</strong> Se o valor der 10 ou mais, mantenha a unidade e leve a dezena para o próximo cálculo.",
+          "<div class='tutorial-example'>Exemplo: 413 &times; 12 (pensamos em 0 4 1 3)<br>&bull; (2 &times; 3) + 0 = <strong>6</strong><br>&bull; (2 &times; 1) + 3 = <strong>5</strong><br>&bull; (2 &times; 4) + 1 = <strong>9</strong><br>&bull; (2 &times; 0) + 4 = <strong>4</strong><br>Resultado: <strong>4.956</strong></div>"
+        ]
+      },
+      6: {
+        title: "Multiplicação por 6",
+        steps: [
+          "<strong>1. Regra base:</strong> Some ao dígito a metade inteira do seu vizinho da direita. Se o dígito em si for ÍMPAR, adicione 5.",
+          "<strong>2. Metade inteira:</strong> Descarte frações (metade de 7 é 3; metade de 5 é 2; metade de 4 é 2).",
+          "<strong>3. Zero à esquerda:</strong> Calcule também a metade do primeiro dígito original sob o zero.",
+          "<div class='tutorial-example'>Exemplo: 624 &times; 6 (0 6 2 4)<br>&bull; 4 (par) + met(0) = <strong>4</strong><br>&bull; 2 (par) + met(4) = <strong>4</strong><br>&bull; 6 (par) + met(2) = <strong>7</strong><br>&bull; 0 (par) + met(6) = <strong>3</strong><br>Resultado: <strong>3.744</strong></div>"
+        ]
+      },
+      7: {
+        title: "Multiplicação por 7",
+        steps: [
+          "<strong>1. Regra base:</strong> Dobre o dígito + metade do vizinho da direita (+5 se o dígito for ímpar).",
+          "<strong>2. Dígito ímpar:</strong> Quando o dígito analisado for ímpar, some 5 após dobrá-lo.",
+          "<strong>3. Transporte:</strong> Lembre-se de somar qualquer vai-um vindo da coluna anterior.",
+          "<div class='tutorial-example'>Exemplo: 342 &times; 7 (0 3 4 2)<br>&bull; 2(par): 2&times;2 + met(0) = <strong>4</strong><br>&bull; 4(par): 2&times;4 + met(2) = <strong>9</strong><br>&bull; 3(ímpar): 2&times;3 + 5 + met(4) = 13 &rarr; <strong>3</strong> (vai 1)<br>&bull; 0(par): 2&times;0 + met(3) + 1 = <strong>2</strong><br>Resultado: <strong>2.394</strong></div>"
+        ]
+      },
+      5: {
+        title: "Multiplicação por 5",
+        steps: [
+          "<strong>1. Regra base:</strong> Pegue apenas a metade inteira do vizinho da direita (+5 se o dígito for ímpar).",
+          "<strong>2. Importante:</strong> O dígito em si não entra na soma direta, apenas determina se ganha +5 (se for ímpar).",
+          "<div class='tutorial-example'>Exemplo: 428 &times; 5 (0 4 2 8)<br>&bull; 8 (par): 0 + met(0) = <strong>0</strong><br>&bull; 2 (par): 0 + met(8) = <strong>4</strong><br>&bull; 4 (par): 0 + met(2) = <strong>1</strong><br>&bull; 0 (par): 0 + met(4) = <strong>2</strong><br>Resultado: <strong>2.140</strong></div>"
+        ]
+      },
+      9: {
+        title: "Multiplicação por 9",
+        steps: [
+          "<strong>1. Último dígito (da direita):</strong> Subtraia de 10 (complemento de 10).",
+          "<strong>2. Dígitos do meio:</strong> Subtraia de 9 e some o vizinho da direita.",
+          "<strong>3. Primeiro dígito (zero):</strong> Vizinho da direita diminuído de 1 (e desconte transportes).",
+          "<div class='tutorial-example'>Exemplo: 846 &times; 9 (0 8 4 6)<br>&bull; 10 - 6 = <strong>4</strong><br>&bull; (9 - 4) + 6 = 11 &rarr; <strong>1</strong> (vai 1)<br>&bull; (9 - 8) + 4 + 1 = <strong>6</strong><br>&bull; 8 - 1 = <strong>7</strong><br>Resultado: <strong>7.614</strong></div>"
+        ]
+      },
+      8: {
+        title: "Multiplicação por 8",
+        steps: [
+          "<strong>1. Último dígito:</strong> Subtraia de 10 e dobre o resultado.",
+          "<strong>2. Dígitos do meio:</strong> Subtraia de 9, dobre o resultado e adicione o vizinho.",
+          "<strong>3. Dígito da extrema esquerda (zero):</strong> Pegue o vizinho da esquerda e subtraia 2.",
+          "<div class='tutorial-example'>Exemplo: 436 &times; 8 (0 4 3 6)<br>&bull; (10 - 6)&times;2 = <strong>8</strong><br>&bull; (9 - 3)&times;2 + 6 = 18 &rarr; <strong>8</strong> (vai 1)<br>&bull; (9 - 4)&times;2 + 3 + 1 = 14 &rarr; <strong>4</strong> (vai 1)<br>&bull; 4 - 2 + 1 = <strong>3</strong><br>Resultado: <strong>3.488</strong></div>"
+        ]
+      },
+      4: {
+        title: "Multiplicação por 4",
+        steps: [
+          "<strong>1. Último dígito:</strong> Subtraia de 10 (+5 se for ímpar).",
+          "<strong>2. Dígitos do meio:</strong> Subtraia de 9 + metade do vizinho (+5 se for ímpar).",
+          "<strong>3. Zero à esquerda:</strong> Metade do vizinho - 1 (+ transporte).",
+          "<div class='tutorial-example'>Exemplo: 312 &times; 4 (0 3 1 2)<br>&bull; 2 (par): 10 - 2 = <strong>8</strong><br>&bull; 1 (ímpar): (9 - 1) + 5 + met(2) = 14 &rarr; <strong>4</strong> (vai 1)<br>&bull; 3 (ímpar): (9 - 3) + 5 + met(1) + 1 = 12 &rarr; <strong>2</strong> (vai 1)<br>&bull; 0 (par): met(3) - 1 + 1 = <strong>1</strong><br>Resultado: <strong>1.248</strong></div>"
+        ]
+      },
+      3: {
+        title: "Multiplicação por 3",
+        steps: [
+          "<strong>1. Último dígito:</strong> Subtraia de 10, dobre (+5 se for ímpar).",
+          "<strong>2. Dígitos do meio:</strong> Subtraia de 9, dobre + metade do vizinho (+5 se for ímpar).",
+          "<strong>3. Zero à esquerda:</strong> Metade do vizinho - 2 (+ transporte).",
+          "<div class='tutorial-example'>Exemplo: 264 &times; 3 (0 2 6 4)<br>&bull; 4 (par): (10 - 4)&times;2 = 12 &rarr; <strong>2</strong> (vai 1)<br>&bull; 6 (par): (9 - 6)&times;2 + met(4) + 1 = <strong>9</strong><br>&bull; 2 (par): (9 - 2)&times;2 + met(6) = 17 &rarr; <strong>7</strong> (vai 1)<br>&bull; 0: met(2) - 2 + 1 + 1(ajuste) = <strong>0</strong><br>Resultado: <strong>792</strong></div>"
+        ]
+      },
+      2: {
+        title: "Multiplicação por 2",
+        steps: [
+          "<strong>1. Regra base:</strong> Dobre cada dígito da direita para a esquerda de forma direta.",
+          "<strong>2. Transporte simples:</strong> Se o dobro for 10 ou mais, deixe a unidade e leve 1 para a próxima soma.",
+          "<div class='tutorial-example'>Exemplo: 673 &times; 2 (0 6 7 3)<br>&bull; 2 &times; 3 = <strong>6</strong><br>&bull; 2 &times; 7 = 14 &rarr; <strong>4</strong> (vai 1)<br>&bull; 2 &times; 6 + 1 = 13 &rarr; <strong>3</strong> (vai 1)<br>&bull; 2 &times; 0 + 1 = <strong>1</strong><br>Resultado: <strong>1.346</strong></div>"
+        ]
+      },
+      mixed: {
+        title: "Modo Misto",
+        steps: [
+          "<strong>Como funciona:</strong> A cada rodada você receberá uma multiplicação por um número aleatório entre 2 e 12.",
+          "<strong>Estratégia:</strong> Identifique imediatamente a regra correspondente e execute mentalmente ou com auxílio do ábaco.",
+          "<strong>Dica de Ouro:</strong> Pratique primeiro as regras individuais nos modos de 2 e 3 dígitos antes de encarar o modo misto contra o relógio!"
+        ]
+      }
+    };
+
+    function openHistoryModal() {
+      document.getElementById('historyModal').classList.add('active');
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('historyModal').classList.remove('active');
+    }
+
+    function hideAllViews() {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    }
+
+    function setInputMode(mode) {
+      inputMode = mode;
+      
+      const elKey = document.getElementById('btnModeKeyboard');
+      const elAbacus = document.getElementById('btnModeAbacus');
+      if (elKey) elKey.classList.toggle('active', mode === 'keyboard');
+      if (elAbacus) elAbacus.classList.toggle('active', mode === 'abacus');
+
+      const kbSection = document.getElementById('keyboardInputSection');
+      const abSection = document.getElementById('abacusSection');
+      if (kbSection && abSection) {
+        if (mode === 'keyboard') {
+          kbSection.style.display = 'flex';
+          abSection.style.display = 'none';
+          document.getElementById('answerInput').focus();
+        } else {
+          kbSection.style.display = 'none';
+          abSection.style.display = 'flex';
+        }
+      }
+    }
+
+    function showHome() {
+      clearInterval(timerInterval);
+      hideAllViews();
+      document.getElementById('homeView').classList.add('active');
+    }
+
+    function openModeMenu(multiplier, ruleDesc) {
+      clearInterval(timerInterval);
+      if (multiplier === 'mixed') {
+        isMixed = true;
+        currentMultiplier = 'mixed';
+      } else {
+        isMixed = false;
+        currentMultiplier = multiplier;
+      }
+      currentRuleText = ruleDesc;
+
+      const titleEl = document.getElementById('modeMenuTitle');
+      titleEl.innerHTML = isMixed ? 'Modo Misto' : `Regra do &times; ${currentMultiplier}`;
+
+      hideAllViews();
+      document.getElementById('modeSelectView').classList.add('active');
+    }
+
+    function openTutorial() {
+      const data = tutorialsData[currentMultiplier] || tutorialsData[11];
+      document.getElementById('tutorialTitle').innerHTML = data.title;
+      
+      const contentEl = document.getElementById('tutorialContent');
+      contentEl.innerHTML = data.steps.map(s => `<div class="tutorial-step">${s}</div>`).join('');
+
+      hideAllViews();
+      document.getElementById('tutorialView').classList.add('active');
+    }
+
+    function openDigitSelect(mode) {
+      currentMode = mode;
+      document.getElementById('digitSelectTitle').textContent = mode === 'timer' ? 'Contra o Relógio' : 'Modo Treino';
+      document.getElementById('digitSelectSub').textContent = mode === 'timer' 
+        ? 'Escolha a quantidade de dígitos para o desafio de 5 questões:'
+        : 'Escolha a quantidade de dígitos para praticar livremente:';
+
+      hideAllViews();
+      document.getElementById('digitSelectView').classList.add('active');
+    }
+
+    function startPracticeWithDigits(digits) {
+      selectedDigits = digits;
+      hideAllViews();
+      document.getElementById('practiceView').classList.add('active');
+
+      document.getElementById('practiceHeaderTitle').innerHTML = isMixed ? 'Modo Misto' : `Regra do &times; ${currentMultiplier}`;
+
+      setInputMode(inputMode);
+      resetAbacus();
+
+      const nextBtn = document.getElementById('nextQuestionBtn');
+      const statusBar = document.getElementById('statusBar');
+
+      if (currentMode === 'timer') {
+        statusBar.style.display = 'flex';
+        nextBtn.style.display = 'none';
+        timerQuestionsCount = 0;
+        timerCorrectAnswers = 0;
+        timerStartTime = Date.now();
+        
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          const elapsed = ((Date.now() - timerStartTime) / 1000).toFixed(1);
+          document.getElementById('timerDisplay').textContent = `Tempo: ${elapsed}s`;
+        }, 100);
+
+        generateQuestion();
+      } else {
+        statusBar.style.display = 'none';
+        nextBtn.style.display = 'inline-flex';
+        generateQuestion();
+      }
+    }
+
+    function generateNumberByDigits(digits) {
+      const min = Math.pow(10, digits - 1);
+      const max = Math.pow(10, digits) - 1;
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateQuestion() {
+      let activeMultiplier = currentMultiplier;
+      if (isMixed) {
+        activeMultiplier = multipliersList[Math.floor(Math.random() * multipliersList.length)];
+      }
+
+      currentNumber = generateNumberByDigits(selectedDigits);
+
+      document.getElementById('ruleHeader').innerHTML = `Regra do &times; ${activeMultiplier}`;
+      document.getElementById('ruleDescription').textContent = isMixed ? (tutorialsData[activeMultiplier]?.title || "") : currentRuleText;
+      
+      document.getElementById('problemDisplay').innerHTML = `
+        <span class="num">${currentNumber.toLocaleString('pt-BR')}</span>
+        <span class="op">&times;</span>
+        <span class="num">${activeMultiplier}</span>
+      `;
+      
+      const input = document.getElementById('answerInput');
+      input.value = '';
+      input.disabled = false;
+      if (inputMode === 'keyboard') {
+        input.focus();
+      }
+
+      resetAbacus();
+
+      const feedback = document.getElementById('feedback');
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+
+      if (currentMode === 'timer') {
+        timerQuestionsCount++;
+        document.getElementById('progressIndicator').textContent = `Questão ${timerQuestionsCount} de 5`;
+      }
+    }
+
+    function checkAnswer() {
+      let val = 0;
+      if (inputMode === 'keyboard') {
+        val = parseInt(document.getElementById('answerInput').value, 10);
+      } else {
+        val = getAbacusTotalValue();
+      }
+      
+      let activeMultiplier = currentMultiplier;
+      if (isMixed) {
+        const text = document.getElementById('problemDisplay').innerText;
+        const parts = text.split('×');
+        if (parts.length === 2) {
+          activeMultiplier = parseInt(parts[1].trim().replace(/\./g, ''), 10);
+        }
+      }
+
+      const expected = currentNumber * activeMultiplier;
+      const feedback = document.getElementById('feedback');
+
+      if (isNaN(val) || (inputMode === 'keyboard' && document.getElementById('answerInput').value.trim() === '')) {
+        feedback.textContent = 'Por favor, insira ou monte uma resposta!';
+        feedback.className = 'feedback incorrect';
+        return;
+      }
+
+      document.getElementById('answerInput').disabled = true;
+
+      if (val === expected) {
+        feedback.textContent = '✓ Correto! Parabéns!';
+        feedback.className = 'feedback correct';
+        if (currentMode === 'timer') timerCorrectAnswers++;
+      } else {
+        feedback.textContent = `✗ Incorreto. O resultado é ${expected.toLocaleString('pt-BR')}`;
+        feedback.className = 'feedback incorrect';
+      }
+
+      if (currentMode === 'timer') {
+        setTimeout(() => {
+          if (timerQuestionsCount >= 5) {
+            finishTimeTrial();
+          } else {
+            generateQuestion();
+          }
+        }, 1100);
+      }
+    }
+
+    function finishTimeTrial() {
+      clearInterval(timerInterval);
+      const totalTime = ((Date.now() - timerStartTime) / 1000).toFixed(1);
+      
+      hideAllViews();
+      document.getElementById('timeTrialResultView').classList.add('active');
+
+      document.getElementById('timeTrialSummary').innerHTML = `
+        <strong>Tempo Total:</strong> ${totalTime} segundos<br>
+        <strong>Precisão:</strong> ${timerCorrectAnswers} de 5 corretas<br>
+        <strong>Média:</strong> ${(totalTime / 5).toFixed(1)}s por cálculo
+      `;
+    }
+
+    /* LÓGICA DO SOROBAN VIRTUAL DE 9 HASTES */
+    function renderAbacus() {
+      const frame = document.getElementById('sorobanFrame');
+      frame.innerHTML = '<div class="abacus-beam-bar"></div>';
+
+      for (let col = 0; col < TOTAL_COLUMNS; col++) {
+        const colEl = document.createElement('div');
+        colEl.className = 'abacus-column';
+        colEl.dataset.col = col;
+
+        const rod = document.createElement('div');
+        rod.className = 'abacus-rod-line';
+        colEl.appendChild(rod);
+
+        if (col === 2 || col === 5 || col === 8) {
+          const dot = document.createElement('div');
+          dot.className = 'abacus-dot';
+          colEl.appendChild(dot);
+        }
+
+        const upperDeck = document.createElement('div');
+        upperDeck.className = 'abacus-deck-upper';
+        const upperBead = document.createElement('div');
+        upperBead.className = `soroban-bead ${abacusState[col].upper === 1 ? 'active' : ''}`;
+        upperBead.onclick = (e) => {
+          e.stopPropagation();
+          toggleUpperBead(col);
+        };
+        upperDeck.appendChild(upperBead);
+        colEl.appendChild(upperDeck);
+
+        const lowerDeck = document.createElement('div');
+        lowerDeck.className = 'abacus-deck-lower';
+        
+        for (let beadIdx = 1; beadIdx <= 4; beadIdx++) {
+          const lowerBead = document.createElement('div');
+          const isActive = abacusState[col].lower >= beadIdx;
+          lowerBead.className = `soroban-bead ${isActive ? 'active' : ''}`;
+          lowerBead.onclick = (e) => {
+            e.stopPropagation();
+            setLowerBeads(col, beadIdx);
+          };
+          lowerDeck.appendChild(lowerBead);
+        }
+        colEl.appendChild(lowerDeck);
+
+        frame.appendChild(colEl);
+      }
+
+      updateAbacusDisplay();
+    }
+
+    function toggleUpperBead(col) {
+      abacusState[col].upper = abacusState[col].upper === 1 ? 0 : 1;
+      renderAbacus();
+    }
+
+    function setLowerBeads(col, beadIdx) {
+      if (abacusState[col].lower === beadIdx) {
+        abacusState[col].lower = beadIdx - 1;
+      } else {
+        abacusState[col].lower = beadIdx;
+      }
+      renderAbacus();
+    }
+
+    function resetAbacus() {
+      abacusState = Array.from({ length: TOTAL_COLUMNS }, () => ({ upper: 0, lower: 0 }));
+      renderAbacus();
+    }
+
+    function getAbacusTotalValue() {
+      let total = 0;
+      for (let col = 0; col < TOTAL_COLUMNS; col++) {
+        const colVal = (abacusState[col].upper * 5) + abacusState[col].lower;
+        const power = TOTAL_COLUMNS - 1 - col;
+        total += colVal * Math.pow(10, power);
+      }
+      return total;
+    }
+
+    function updateAbacusDisplay() {
+      const val = getAbacusTotalValue();
+      const txt = document.getElementById('abacusValueText');
+      if (txt) {
+        txt.textContent = val.toLocaleString('pt-BR');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAbacus();
+    });
+  </script>
+</body>
+</html>
