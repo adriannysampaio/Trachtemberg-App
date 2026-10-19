@@ -350,7 +350,7 @@
     const multipliersList = [11, 12, 6, 7, 5, 9, 8, 4, 3, 2];
 
     // ESTADO DO ÁBACO
-    const TOTAL_COLUMNS = 9;
+    const TOTAL_COLUMNS = 8; // Alterado para 8 hastes
     let abacusState = Array.from({ length: TOTAL_COLUMNS }, () => ({ upper: 0, lower: 0 }));
     const abacusDOM = []; // Cache dos elementos do ábaco para O(1) update
 
@@ -537,7 +537,8 @@
       
       for (let col = 0; col < TOTAL_COLUMNS; col++) {
         const colEl = document.createElement('div'); colEl.className = 'abacus-column';
-        colEl.innerHTML = `<div class="abacus-rod-line"></div>${[2,5,8].includes(col)?'<div class="abacus-dot"></div>':''}`;
+        // Ajustados os pontos (dots) para as posições 1, 4 e 7 (da esquerda pra direita com 8 hastes) correspondendo a Milhões, Milhares e Unidades
+        colEl.innerHTML = `<div class="abacus-rod-line"></div>${[1,4,7].includes(col)?'<div class="abacus-dot"></div>':''}`;
         
         // Superior
         const upDeck = document.createElement('div'); upDeck.className = 'abacus-deck-upper';
@@ -607,7 +608,7 @@
         const st = abacusState[col]; const dom = abacusDOM[col];
         dom.upper.classList.toggle('active', st.upper === 1);
         for (let i = 0; i < 4; i++) dom.lower[i].classList.toggle('active', st.lower >= i+1);
-        dom.val.textContent = (st.upper * 5) + st.lower; // Atualiza o rodapé com o valor da haste[cite: 1]
+        dom.val.textContent = (st.upper * 5) + st.lower; // Atualiza o rodapé com o valor da haste
       }
       verifyAnswer(false); // Dispara auto-avaliação ao terminar o movimento
     }
